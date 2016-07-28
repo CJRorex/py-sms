@@ -1,15 +1,21 @@
+from bs4 import BeautifulSoup
+import urllib2
+
 def response_handler(body):
+    headlines_list = []
+    links = []
+    r = urllib2.urlopen('http://www.espn.com/').read()
+    soup = BeautifulSoup(r)
+    headline_tags = soup.find_all("div", {"class": "headlines"})
+    for div in headline_tags:
+        for ul in div.find_all("ul"):
+            for li in ul.find_all("li"):
+                headlines_list.append (li.get_text())
+                for a in li.find_all("a"):
+                    links.append ('espn.go.com' + a['href'])
     message = ""
-    if body == 'start':
-        message = "You are in a boring class.  Do you 'take a nap' or 'take notes'?"
-    elif body == 'take a nap':
-        message = "You fall asleep forever...and ever...and ever.  Do you want to 'start' over?"
-    elif body == 'take notes':
-        message = "You furiously take notes as the teacher drones on.  Your friend taps you on the shoulder.  Do you 'turn around' or keep looking at your 'notes'"
-    elif body == 'turn around':
-        message = "You turn around, only to find that you have just stared into the eyes of a basilisk!  Oh well...do you want to 'start' over?"
-    elif body == 'notes':
-        message = "Unfortunately, this game is incomplete...please come back later for more!  Do you want to 'start' over?"
-    else:
-        message = "Invalid command.  Text 'start' to restart the game.  Or text 'pic please' for a random picture"
+    for l in links:
+        message = message + "\n" + l
     return message
+
+    
